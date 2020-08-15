@@ -4,7 +4,8 @@
   "description": "Small todo made with node.js",
   "main": "app.js",
   "scripts": {
-    "test": "node ."
+    "test": "nodemon .",
+    "start": "node ."
   },
   "author": "",
   "license": "AGPLv3",

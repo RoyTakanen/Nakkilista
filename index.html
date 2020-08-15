@@ -11,22 +11,28 @@
       <center><h2>Nakkilista</h2></center>
       <div class="row flex-spaces child-borders">
         <div class="sm-5 col border-dashed">
-          <ol>
-            <li v-for="todo in todos">
-              <button class="btn-success btn-small">Suorita</button><button class="btn-danger btn-small">Poista</button> {{ todo.text }}
-            </li>
-          </ol>
-
           <div class="row">
             <div class="col sm-8">
               <div class="form-group">
-                <input type="text" placeholder="Uusi duuni" id="paperInputs1">
+                <input type="text" v-model="jobi" v-on:keyup.13="uusitehtava(jobi)" placeholder="Uusi duuni">
               </div>
             </div>
             <div class="col sm-4">
-              <input type="submit" class="paper-btn btn-primary" value="Lisää"/>
+              <input type="submit" v-on:click="uusitehtava(jobi)" class="paper-btn btn-primary" value="Lisää"/>
             </div>
           </div>
+
+          <ol>
+            <li v-for="(todo, key) in todos">
+              <button class="btn-success btn-small" v-on:click="suorita">Suorita</button><button class="btn-danger btn-small" v-on:click="poista(key, 'todos')">Poista</button> {{ todo.text }}
+            </li>
+          </ol>
+          <hr>
+          <ol>
+            <li v-for="todo in done">
+              <button class="btn-secondary btn-small" v-on:click="palauta">Palauta</button><button class="btn-danger btn-small" v-on:click="poista(key, 'done')">Poista</button> <s>{{ todo.text }}</s>
+            </li>
+          </ol>
 
           <!--{ message }}-->
         </div>
@@ -43,15 +49,55 @@
         data: {
           message: 'Hello Vue!',
           todos: [
-            { text: 'Pese pyykit' },
             { text: 'Viikkaa vaatteet' },
             { text: 'Imuroi autotalli' },
             { text: 'Maalaa olohuone' }
           ],
-          suoritetut: 0,
-          suorittamattomat: 4
+          done: [
+            { text: 'Pese pyykit' }
+          ]
+        },
+        computed: {
+          suoritetut: function () {
+            return this.done.length
+          },
+          suorittamattomat: function () {
+            return this.todos.length
+          }
+        },
+        methods: {
+          suorita: function (index) {
+            var poistettu = this.todos.splice(index, 1);
+            this.done.push({text: poistettu[0].__ob__.value.text})
+          },
+          palauta: function (index) {
+            var poistettu = this.done.splice(index, 1);
+            this.todos.push({text: poistettu[0].__ob__.value.text})
+          },
+          poista: function (index, lista) {
+            if (lista === "todos") {
+              this.todos.splice(index, 1);
+            } else {
+              this.done.splice(index, 1);
+            }
+          },
+          uusitehtava: function (tehtava) {
+            if (tehtava) {
+              this.todos.push({text: tehtava })
+            }
+            this.jobi = ''
+          }
         }
       })
+
+      /*Vue.component('button-delete', {
+        data: function () {
+          return {
+            suoritetut: 0
+          }
+        },
+        template: ''
+      })*/
     </script>
   </body>
 </html>
