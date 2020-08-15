@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fi" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Nakkilista - kaikkitietokoneista</title>
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/dist/vue.js"></script>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  </head>
+  <body>
+    <div id="app">
+      <a href="/api">API</a>
+      <center><h2>Nakkilista</h2></center>
+      <div class="row flex-spaces child-borders">
+        <div class="sm-5 col border-dashed">
+          <div class="row">
+            <div class="col sm-8">
+              <div class="form-group">
+                <input type="text" v-model="jobi" v-on:keyup.13="uusitehtava(jobi)" placeholder="Uusi duuni">
+              </div>
+            </div>
+            <div class="col sm-4">
+              <input type="submit" v-on:click="uusitehtava(jobi)" class="paper-btn btn-primary" value="Lisää"/>
+            </div>
+          </div>
+
+          <ol>
+            <li v-for="(todo, key) in todos">
+              <button class="btn-success btn-small" v-on:click="suorita">Suorita</button><button class="btn-danger btn-small" v-on:click="poista(key, 'todos')">Poista</button> {{ todo.text }}
+            </li>
+          </ol>
+          <hr>
+          <ol>
+            <li v-for="todo in done">
+              <button class="btn-secondary btn-small" v-on:click="palauta">Palauta</button><button class="btn-danger btn-small" v-on:click="poista(key, 'done')">Poista</button> <s>{{ todo.text }}</s>
+            </li>
+          </ol>
+
+          <!--{ message }}-->
+        </div>
+        <div class="sm-3 col border-dashed">
+          <strong>Tilastot:</strong>
+          <p v-if="muutoksia" class="text-danger">Tallentamattomia muutoksia!!</p>
+          <p v-else class="text-success">Muutokset on tallennettu.</p>
+          <p>Suoritetut: {{ suoritetut }}</p>
+          <p>Suorittamattomat: {{ suorittamattomat }}</p>
+          <button class="btn-secondary btn-small" v-on:click="tallenna">Tallenna</button>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var app = new Vue({
+        el: '#app',
+        data: {
+          todos: [
+            { text: 'Viikkaa vaatteet' },
+            { text: 'Imuroi autotalli' },
+            { text: 'Maalaa olohuone' }
+          ],
+          done: [
+            { text: 'Pese pyykit' }
+          ],
+          muutoksia: false
+        },
+        computed: {
+          suoritetut: function () {
+            return this.done.length
+          },
+          suorittamattomat: function () {
+            return this.todos.length
+          }
+        },
+        methods: {
+          suorita: function (index) {
+            var poistettu = this.todos.splice(index, 1);
+            this.done.push({text: poistettu[0].__ob__.value.text})
+            this.muutoksia = true
+          },
+          palauta: function (index) {
+            var poistettu = this.done.splice(index, 1);
+            this.todos.push({text: poistettu[0].__ob__.value.text})
+            this.muutoksia = true
+          },
+          poista: function (index, lista) {
+            if (lista === "todos") {
+              this.todos.splice(index, 1);
+            } else {
+              this.done.splice(index, 1);
+            }
+            this.muutoksia = true
+          },
+          uusitehtava: function (tehtava) {
+            if (tehtava) {
+              this.todos.push({text: tehtava })
+            }
+            this.jobi = ''
+            this.muutoksia = true
+          },
+          tallenna: function () {
+            this.muutoksia = false
+          }
+        }
+      })
+
+      /*Vue.component('button-delete', {
+        data: function () {
+          return {
+            suoritetut: 0
+          }
+        },
+        template: ''
+      })*/
+    </script>
+  </body>
+</html>

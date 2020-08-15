@@ -1,17 +1,111 @@
 const express = require('express');
+const ejs = require('ejs');
 const path = require('path');
+const crypto = require('crypto')
+const cookieParser = require('cookie-parser')
+const sqlite3 = require('sqlite3').verbose();
 
 const app = express()
 const port = 8080
 
-app.set('view engine', 'pug')
+app.set('view engine', 'ejs')
 
 app.use(express.static('css'))
 app.use(express.static('node_modules/vue'))
+app.use(cookieParser())
+
+let db = new sqlite3.Database(':memory:', (err) => {
+  if (err) throw err;
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+  );`);
+  db.run(`CREATE TABLE IF NOT EXISTS data (
+    username TEXT NOT NULL,
+    todos TEXT,
+    done TEXT
+  );`);
+  console.log('Yhdistetty välimuistissa toimivaan tietokantaan. VAIN TESTAUSKÄYTTÖÖN');
+});
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/index.html'));
-  //res.render('index', { title: 'Hey', message: 'Hello there!' })
+  res.render('index')
+})
+
+app.get('/api', function(req, res) {
+  res.render('api/help')
+})
+
+//Vaihda post
+app.get('/api/rekisteroidy', function(req, res) {
+  if (req.query.kayttajanimi && req.query.salasana) {
+    let kayttajanimi = req.query.kayttajanimi;
+    let salasana = crypto.createHash('md5').update(req.query.salasana).digest('hex');
+
+    db.all(`SELECT username FROM users WHERE username IS ?;`, [kayttajanimi], (err, rows) => {
+      if (err) throw err;
+
+      if (rows.length > 0) {
+        res.setHeader('Content-Type', 'application/json');
+        res.render('api/rekisteroidy', {
+          virhe: 'Käyttäjänimi ei ole saatavilla.'
+        })
+      } else {
+        db.run(`INSERT INTO users (username, password) VALUES(?, ?)`, [kayttajanimi, salasana], function(err) {
+          if (err) throw err;
+          console.log(`Uusi käyttäjä on luotu. Hänen ID on: ${this.lastID}`);
+        });
+
+        res.setHeader('Content-Type', 'application/json');
+        res.render('api/rekisteroidy', {
+          virhe: '',
+          onnistui: 'Uusi käyttäjä on luotu onnistuneesti.'
+        });
+      }
+    });
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/rekisteroidy', {
+      virhe: 'Salasana ja/tai käyttäjänimi on tyhjä.'
+    })
+  }
+});
+
+app.get('/api/tunnistaudu', function(req, res) {
+  if (req.query.kayttajanimi && req.query.salasana) {
+    let kayttajanimi = req.query.kayttajanimi;
+    let salasana = crypto.createHash('md5').update(req.query.salasana).digest('hex');
+
+    db.all(`SELECT username FROM users WHERE username IS ? AND password IS ?;`, [kayttajanimi, salasana], (err, rows) => {
+      if (err) throw err;
+
+      if (rows.length > 0) {
+        console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); //TODO: Kerro milloin sessiot vanhenevat
+        res.setHeader('Content-Type', 'application/json');
+        res.render('api/tunnistaudu', {
+          real: '39dsa4'
+        })
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.render('api/tunnistaudu', {
+          real: ''
+        })
+      }
+    });
+
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/rekisteroidy', {
+      virhe: 'Salasana ja/tai käyttäjänimi on tyhjä.'
+    })
+  }
+});
+
+app.get('/api/tehtavat', function(req, res) {
+  res.render('api/tehtavat', {
+    tehtavat: 'd'
+  })
 })
 
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`))
