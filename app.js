@@ -65,7 +65,10 @@ app.get('/api/rekisteroidy', function(req, res) {
       } else {
         db.run(`INSERT INTO users (username, password) VALUES(?, ?)`, [kayttajanimi, salasana], function(err) {
           if (err) throw err;
-          console.log(`Uusi käyttäjä on luotu. Hänen ID on: ${this.lastID}`);
+          db.run(`INSERT INTO data (username, todos, done) VALUES(?, ?, ?)`, [kayttajanimi, kayttajanimi, kayttajanimi], function(err) {
+            if (err) throw err;
+            console.log(`Uusi käyttäjä on luotu. Hänen ID on: ${this.lastID}`);
+          });
         });
 
         res.setHeader('Content-Type', 'application/json');
@@ -93,6 +96,7 @@ app.get('/api/tunnistaudu', function(req, res) {
 
       if (rows.length > 0) {
         req.session.authenticated = true
+        req.session.kayttajanimi = kayttajanimi;
         console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); //TODO: Kerro milloin sessiot vanhenevat
         res.setHeader('Content-Type', 'application/json');
         res.render('api/tunnistaudu', {
@@ -115,9 +119,21 @@ app.get('/api/tunnistaudu', function(req, res) {
 });
 
 app.get('/api/tehtavat', function(req, res) {
-  res.render('api/tehtavat', {
-    tehtavat: 'd'
-  })
+  if (req.session.authenticated) {
+    console.log(`Palvelimelta haetaan tehtäviä. Hakijana ${req.session.kayttajanimi}`);
+    db.all(`SELECT * FROM data WHERE username='${req.session.kayttajanimi}';`, [], (err, rows) => {
+      if (err) throw err;
+
+      rows.forEach((row) => {
+        console.log(row);
+      });
+      res.setHeader('Content-Type', 'application/json');
+      res.render('api/tehtavat', {
+        todos: rows[0].todos,
+        done: rows[0].done
+      });
+    });
+  }
 })
 
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`))
