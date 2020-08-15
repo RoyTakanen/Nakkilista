@@ -15,7 +15,7 @@ app.use(express.static('node_modules/vue'))
 
 var sess = {
   secret: 'keyboard cat', //vaihda konffista
-  cookie: { maxAge: 120000 } /* 120 sekuntia */
+  cookie: { maxAge: 3600000 } /* 120 sekuntia */
 }
 
 if (app.get('env') === 'production') { //vaihda konffauksesta
@@ -23,6 +23,8 @@ if (app.get('env') === 'production') { //vaihda konffauksesta
   sess.cookie.secure = true // serve secure cookies
 }
 
+app.use(express.json());
+app.use(express.urlencoded());
 app.use(session(sess))
 
 let db = new sqlite3.Database(':memory:', (err) => {
@@ -41,7 +43,93 @@ let db = new sqlite3.Database(':memory:', (err) => {
 });
 
 app.get('/', function(req, res) {
-  res.render('index')
+  if (req.session.authenticated) {
+    res.render('index', {
+      authenticated: false
+    })
+  } else {
+    res.redirect('/kirjaudu');
+  }
+});
+
+app.get('/kirjaudu', function (req, res) {
+  res.render('kirjaudu', {
+    virhe: '',
+    onnistui: ''
+  })
+});
+
+app.post('/tunnistaudu', function (req, res) {
+  if (req.body.kayttajanimi && req.body.salasana) {
+    let kayttajanimi = req.body.kayttajanimi;
+    let salasana = crypto.createHash('md5').update(req.body.salasana).digest('hex');
+
+    db.all(`SELECT username FROM users WHERE username IS ? AND password IS ?;`, [kayttajanimi, salasana], (err, rows) => {
+      if (err) throw err;
+
+      if (rows.length > 0) {
+        req.session.authenticated = true;
+        req.session.kayttajanimi = kayttajanimi;
+        console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); //TODO: Kerro milloin sessiot vanhenevat
+        res.redirect('/')
+      } else {
+        res.render('kirjaudu', {
+          virhe: 'Virheellinen käyttäjänimi tai salasana.',
+          onnistui: ''
+        })
+      }
+    });
+  } else {
+    res.redirect('/kirjaudu')
+  }
+})
+
+app.get('/rekisteroidy', function (req, res) {
+  res.render('rekisteroidy', {
+    virhe: ''
+  })
+});
+
+app.post('/luokayttaja', function (req, res) {
+  if (req.body.kayttajanimi && req.body.salasana) {
+    let kayttajanimi = req.body.kayttajanimi;
+    let salasana = crypto.createHash('md5').update(req.body.salasana).digest('hex');
+
+    db.all(`SELECT username FROM users WHERE username IS ?;`, [kayttajanimi], (err, rows) => {
+      if (err) throw err;
+
+      if (rows.length > 0) {
+        res.render('rekisteroidy', {
+          virhe: 'Käyttäjänimi ei ole saatavilla.',
+        })
+      } else {
+        db.run(`INSERT INTO users (username, password) VALUES(?, ?)`, [kayttajanimi, salasana], function(err) {
+          if (err) throw err;
+          db.run(`INSERT INTO data (username, todos, done) VALUES(?, ?, ?)`, [kayttajanimi, ['Viikkaa vaatteet','Imuroi autotalli','Maalaa olohuone'].join('_'), ['Pese pyykit'].join('_')], function(err) {
+            if (err) throw err;
+            console.log(`Uusi käyttäjä on luotu. Hänen ID on: ${this.lastID}`);
+          });
+        });
+
+        res.render('kirjaudu', {
+          virhe: '',
+          onnistui: 'Käyttäjä on luotu onnistuneesti'
+        });
+      }
+    });
+  } else {
+    res.redirect('/rekisteroidy')
+  }
+})
+
+app.get('/uloskirjaudu', function(req, res) {
+  console.log(`Käyttäjä ${req.session.kayttajanimi} kirjautui ulos äsken.`);
+  req.session.destroy(function(err) {
+    res.render('kirjaudu', {
+      virhe: '',
+      onnistui: 'Kirjauduit ulos!'
+    })
+  })
 })
 
 app.get('/api', function(req, res) {
