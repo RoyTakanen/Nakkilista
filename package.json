@@ -1,13 +1,13 @@
 {
-  "name": "todo",
+  "name": "Nakkilista",
   "version": "1.0.0",
-  "description": "Small todo made with node.js",
+  "description": "Ensimmäinen Vue.JS-projekti - Nakkilista.",
   "main": "app.js",
   "scripts": {
     "test": "nodemon .",
     "start": "node ."
   },
-  "author": "",
+  "author": "Kaikkitietokoneista",
   "license": "AGPLv3",
   "dependencies": {
     "express": "^4.17.1",
