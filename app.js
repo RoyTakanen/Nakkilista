@@ -2,7 +2,7 @@ const express = require('express');
 const ejs = require('ejs');
 const path = require('path');
 const crypto = require('crypto')
-const cookieParser = require('cookie-parser')
+const session = require('express-session')
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express()
@@ -12,7 +12,18 @@ app.set('view engine', 'ejs')
 
 app.use(express.static('css'))
 app.use(express.static('node_modules/vue'))
-app.use(cookieParser())
+
+var sess = {
+  secret: 'keyboard cat', //vaihda konffista
+  cookie: { maxAge: 120000 } /* 120 sekuntia */
+}
+
+if (app.get('env') === 'production') { //vaihda konffauksesta
+  app.set('trust proxy', 1) // trust first proxy
+  sess.cookie.secure = true // serve secure cookies
+}
+
+app.use(session(sess))
 
 let db = new sqlite3.Database(':memory:', (err) => {
   if (err) throw err;
@@ -81,10 +92,11 @@ app.get('/api/tunnistaudu', function(req, res) {
       if (err) throw err;
 
       if (rows.length > 0) {
+        req.session.authenticated = true
         console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); //TODO: Kerro milloin sessiot vanhenevat
         res.setHeader('Content-Type', 'application/json');
         res.render('api/tunnistaudu', {
-          real: '39dsa4'
+          real: req.session.id
         })
       } else {
         res.setHeader('Content-Type', 'application/json');
