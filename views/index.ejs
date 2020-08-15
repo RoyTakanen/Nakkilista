@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>Nakkilista - kaikkitietokoneista</title>
-    <link rel="stylesheet" href="/paper.css">
+    <link rel="stylesheet" href="/css/paper.css">
     <script src="/dist/vue.js"></script>
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/jquery-3.5.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <div id="app">
@@ -98,7 +99,10 @@
           },
           tallenna: function () {
             this.muutoksia = false
-
+            $.get("/api/tallenna", {
+              done: this.done.join('_'),
+              todos: this.todos.join('_')
+            });
           }
         }
       })

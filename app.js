@@ -10,7 +10,7 @@ const port = 8080
 
 app.set('view engine', 'ejs')
 
-app.use(express.static('css'))
+app.use(express.static('static'))
 app.use(express.static('node_modules/vue'))
 
 var sess = {
@@ -46,7 +46,7 @@ app.get('/', function(req, res) {
   if (req.session.authenticated) {
     db.all(`SELECT * FROM data WHERE username='${req.session.kayttajanimi}';`, [], (err, rows) => {
       if (err) throw err;
-      console.log(rows[0].todos.split('_'));
+      console.log(`Käyttäjä ${req.session.kayttajanimi} hakee tehtäviä.`);
       res.render('index', {
         todos: JSON.stringify(rows[0].todos),
         done: JSON.stringify(rows[0].done)
@@ -220,6 +220,7 @@ app.get('/api/tehtavat', function(req, res) {
     console.log(`Palvelimelta haetaan tehtäviä. Hakijana ${req.session.kayttajanimi}`);
     db.all(`SELECT * FROM data WHERE username='${req.session.kayttajanimi}';`, [], (err, rows) => {
       if (err) throw err;
+      console.log(`Käyttäjä ${req.session.kayttajanimi} hakee tehtäviä.`);
 
       rows.forEach((row) => {
         console.log(row);
