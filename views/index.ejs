@@ -58,14 +58,8 @@
       var app = new Vue({
         el: '#app',
         data: {
-          todos: [
-            'Viikkaa vaatteet',
-            'Imuroi autotalli',
-            'Maalaa olohuone'
-          ],
-          done: [
-            'Pese pyykit'
-          ],
+          todos: [<%- todos.split("_").join('","') %>],
+          done: [<%- done.split("_").join('","') %>],
           muutoksia: false
         },
         computed: {
@@ -104,6 +98,7 @@
           },
           tallenna: function () {
             this.muutoksia = false
+
           }
         }
       })

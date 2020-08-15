@@ -44,9 +44,14 @@ let db = new sqlite3.Database(':memory:', (err) => {
 
 app.get('/', function(req, res) {
   if (req.session.authenticated) {
-    res.render('index', {
-      authenticated: false
-    })
+    db.all(`SELECT * FROM data WHERE username='${req.session.kayttajanimi}';`, [], (err, rows) => {
+      if (err) throw err;
+      console.log(rows[0].todos.split('_'));
+      res.render('index', {
+        todos: JSON.stringify(rows[0].todos),
+        done: JSON.stringify(rows[0].done)
+      });
+    });
   } else {
     res.redirect('/kirjaudu');
   }
@@ -89,6 +94,10 @@ app.get('/rekisteroidy', function (req, res) {
     virhe: ''
   })
 });
+
+app.get('/luokayttaja', function (req, res) {
+  res.redirect('/rekisteroidy')
+})
 
 app.post('/luokayttaja', function (req, res) {
   if (req.body.kayttajanimi && req.body.salasana) {
