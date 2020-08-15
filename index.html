@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fi" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Nakkilista - kaikkitietokoneista</title>
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <center><h2>Nakkilista</h2></center>
+      <div class="row flex-spaces child-borders">
+        <div class="sm-5 col border-dashed">
+          <ol>
+            <li v-for="todo in todos">
+              <button class="btn-success btn-small">Suorita</button><button class="btn-danger btn-small">Poista</button> {{ todo.text }}
+            </li>
+          </ol>
+
+          <div class="row">
+            <div class="col sm-8">
+              <div class="form-group">
+                <input type="text" placeholder="Uusi duuni" id="paperInputs1">
+              </div>
+            </div>
+            <div class="col sm-4">
+              <input type="submit" class="paper-btn btn-primary" value="Lisää"/>
+            </div>
+          </div>
+
+          <!--{ message }}-->
+        </div>
+        <div class="sm-3 col border-dashed">
+          <strong>Tilastot:</strong>
+          <p>Suoritetut: {{ suoritetut }}</p>
+          <p>Suorittamattomat: {{ suorittamattomat }}</p>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var app = new Vue({
+        el: '#app',
+        data: {
+          message: 'Hello Vue!',
+          todos: [
+            { text: 'Pese pyykit' },
+            { text: 'Viikkaa vaatteet' },
+            { text: 'Imuroi autotalli' },
+            { text: 'Maalaa olohuone' }
+          ],
+          suoritetut: 0,
+          suorittamattomat: 4
+        }
+      })
+    </script>
+  </body>
+</html>

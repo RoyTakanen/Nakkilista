@@ -1,0 +1,16 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "Small todo made with node.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "author": "",
+  "license": "AGPLv3",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pug": "^3.0.0",
+    "vue": "^2.6.11"
+  }
+}
