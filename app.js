@@ -65,7 +65,7 @@ app.get('/api/rekisteroidy', function(req, res) {
       } else {
         db.run(`INSERT INTO users (username, password) VALUES(?, ?)`, [kayttajanimi, salasana], function(err) {
           if (err) throw err;
-          db.run(`INSERT INTO data (username, todos, done) VALUES(?, ?, ?)`, [kayttajanimi, kayttajanimi, kayttajanimi], function(err) {
+          db.run(`INSERT INTO data (username, todos, done) VALUES(?, ?, ?)`, [kayttajanimi, ['Viikkaa vaatteet','Imuroi autotalli','Maalaa olohuone'].join('_'), ['Pese pyykit'].join('_')], function(err) {
             if (err) throw err;
             console.log(`Uusi käyttäjä on luotu. Hänen ID on: ${this.lastID}`);
           });
@@ -133,6 +133,35 @@ app.get('/api/tehtavat', function(req, res) {
         done: rows[0].done
       });
     });
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/kirjautumaton');
+  }
+})
+
+//TODO: botti APIn avulla
+
+app.get('/api/tallenna', function(req, res) {
+  let regx = "/[^A-Öa-ö0-9-_ ]/g";
+  try {
+    let done = req.query.done.replace(eval(regx), ''); //suojaa sql-injektiolta
+    let todos = req.query.todos.replace(eval(regx), ''); //suojaa sql-injektiolta
+  } catch (e) {
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/virhe.ejs');
+  }
+
+  if (req.session.authenticated) {
+    console.log(`Palvelimelle tallennetaan tehtäviä. Tallentajana ${req.session.kayttajanimi}`);
+
+    db.run(`UPDATE data SET todos = '${todos}', done = '${done}' WHERE username = '${req.session.kayttajanimi}'`, [], function(err) {
+      if (err) throw err;
+    });
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/tallennettu');
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+    res.render('api/kirjautumaton');
   }
 })
 

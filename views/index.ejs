@@ -5,7 +5,7 @@
     <title>Nakkilista - kaikkitietokoneista</title>
     <link rel="stylesheet" href="/paper.css">
     <script src="/dist/vue.js"></script>
-     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <div id="app">
@@ -26,13 +26,13 @@
 
           <ol>
             <li v-for="(todo, key) in todos">
-              <button class="btn-success btn-small" v-on:click="suorita">Suorita</button><button class="btn-danger btn-small" v-on:click="poista(key, 'todos')">Poista</button> {{ todo.text }}
+              <button class="btn-success btn-small" v-on:click="suorita">Suorita</button><button class="btn-danger btn-small" v-on:click="poista(key, 'todos')">Poista</button> {{ todo }}
             </li>
           </ol>
           <hr>
           <ol>
             <li v-for="todo in done">
-              <button class="btn-secondary btn-small" v-on:click="palauta">Palauta</button><button class="btn-danger btn-small" v-on:click="poista(key, 'done')">Poista</button> <s>{{ todo.text }}</s>
+              <button class="btn-secondary btn-small" v-on:click="palauta">Palauta</button><button class="btn-danger btn-small" v-on:click="poista(key, 'done')">Poista</button> <s>{{ todo }}</s>
             </li>
           </ol>
 
@@ -53,12 +53,12 @@
         el: '#app',
         data: {
           todos: [
-            { text: 'Viikkaa vaatteet' },
-            { text: 'Imuroi autotalli' },
-            { text: 'Maalaa olohuone' }
+            'Viikkaa vaatteet',
+            'Imuroi autotalli',
+            'Maalaa olohuone'
           ],
           done: [
-            { text: 'Pese pyykit' }
+            'Pese pyykit'
           ],
           muutoksia: false
         },
@@ -73,12 +73,12 @@
         methods: {
           suorita: function (index) {
             var poistettu = this.todos.splice(index, 1);
-            this.done.push({text: poistettu[0].__ob__.value.text})
+            this.done.push(poistettu[0])
             this.muutoksia = true
           },
           palauta: function (index) {
             var poistettu = this.done.splice(index, 1);
-            this.todos.push({text: poistettu[0].__ob__.value.text})
+            this.todos.push(poistettu[0])
             this.muutoksia = true
           },
           poista: function (index, lista) {
