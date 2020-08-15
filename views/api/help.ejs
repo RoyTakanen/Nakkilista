@@ -14,7 +14,37 @@
     <label for="collapsible5">Käyttäjän luominen</label>
     <div class="collapsible-body">
       <span>
-        Bacon ipsum dolor sit amet beef venison beef ribs kielbasa. Sausage pig leberkas, t-bone sirloin shoulder bresaola. Frankfurter rump porchetta ham. Pork belly prosciutto brisket meatloaf short ribs.
+        Palvelimelle voi rekisteröityä kuka tahansa lähettämällä GET-pyynnön polkuun /api/rekisteroidy. Tähän pyyntöön tulee lisätä käyttäjänimi ja salasana GET-parametreina. Vastaus tulee JSON-muodossa. Alla on koodiesimerkkejä.<br>
+        <br>
+        <b>JavaScript (jQuery):</b>
+        <pre><code>
+          $.get("/api/rekisteroidy", {
+            kayttajanimi: "DemoKäyttäjä", salasana:"testi123!"
+          });
+        </code></pre>
+        <b>JavaScript (Node.JS):</b>
+        <pre><code>
+          const http = require('http');
+
+          const options = {
+            host: 'nakkilista.kaikkitietokoneista.net',
+            path: '/api/rekisteroidy?kayttajanimi=DemoKäyttäjä&salasana=testi123!'
+          };
+
+          const req = http.get(options, function(res) {
+            var palaset = [];
+            res.on('data', function(chunk) {
+              palaset.push(chunk);
+            }).on('end', function() {
+              var vastaus = Buffer.concat(palaset);
+              console.log(vastaus);
+            })
+          });
+
+          req.on('error', function(e) {
+            console.log('VIRHE: ' + e.message);
+          });
+        </code></pre>
       </span>
     </div>
   </div>
@@ -23,7 +53,37 @@
     <label for="collapsible6">Tunnistautuminen</label>
     <div class="collapsible-body">
       <span>
-        Bacon ipsum dolor sit amet landjaeger sausage brisket, jerky drumstick fatback boudin ball tip turducken. Pork belly meatball t-bone bresaola tail filet mignon kevin turkey ribeye shank flank doner cow kielbasa shankle.
+        Tunnistautuminen palvelimelle tapahtuu lähettämällä GET-pyynnön polkuun /api/tunnistaudu. Tähän pyyntöön tulee lisätä käyttäjänimi ja salasana GET-parametreina. Vastaus tulee JSON-muodossa. Palvelin tunnistaa käyttäjän myöhemmin sessioevästeen avulla. Alla on koodiesimerkkejä.<br>
+        <br>
+        <b>JavaScript (jQuery):</b>
+        <pre><code>
+          $.get("/api/tunnistaudu", {
+            kayttajanimi: "DemoKäyttäjä", salasana:"testi123!"
+          });
+        </code></pre>
+        <b>JavaScript (Node.JS):</b>
+        <pre><code>
+          const http = require('http');
+
+          const options = {
+            host: 'nakkilista.kaikkitietokoneista.net',
+            path: '/api/tunnistaudu?kayttajanimi=Erikoisjaakari&salasana=testi123'
+          };
+
+          const req = http.get(options, function(res) {
+            var palaset = [];
+            res.on('data', function(chunk) {
+              palaset.push(chunk);
+            }).on('end', function() {
+              var vastaus = Buffer.concat(palaset);
+              console.log(vastaus);
+            })
+          });
+
+          req.on('error', function(e) {
+            console.log('VIRHE: ' + e.message);
+          });
+        </code></pre>
       </span>
     </div>
   </div>
@@ -32,7 +92,37 @@
     <label for="collapsible7">Lista tehtävistä</label>
     <div class="collapsible-body">
       <span>
-        Bacon ipsum dolor sit amet beef venison beef ribs kielbasa. Sausage pig leberkas, t-bone sirloin shoulder bresaola. Frankfurter rump porchetta ham. Pork belly prosciutto brisket meatloaf short ribs.
+        Tehtävien pyytäminen palvelimelta tapahtuu lähettämällä GET-pyynnön polkuun /api/tehtavat. Tämän pyynnön lähettäminen on mahdollista vain kirjautuneena (palvelin tunnistaa session evästeestä). Vastaus tulee JSON-muodossa. Alla on koodiesimerkkejä.<br>
+        <br>
+        <b>JavaScript (jQuery):</b>
+        <pre><code>
+          $.get("/api/tunnistaudu", function(data){
+            console.log(data);
+          });
+        </code></pre>
+        <b>JavaScript (Node.JS):</b>
+        <pre><code>
+          const http = require('http');
+
+          const options = {
+            host: 'nakkilista.kaikkitietokoneista.net',
+            path: '/api/tunnistaudu'
+          };
+
+          const req = http.get(options, function(res) {
+            var palaset = [];
+            res.on('data', function(chunk) {
+              palaset.push(chunk);
+            }).on('end', function() {
+              var vastaus = Buffer.concat(palaset);
+              console.log(vastaus);
+            })
+          });
+
+          req.on('error', function(e) {
+            console.log('VIRHE: ' + e.message);
+          });
+        </code></pre>
       </span>
     </div>
   </div>
@@ -41,7 +131,37 @@
     <label for="collapsible8">Muutoksien tallennus</label>
     <div class="collapsible-body">
       <span>
-        Bacon ipsum dolor sit amet landjaeger sausage brisket, jerky drumstick fatback boudin ball tip turducken. Pork belly meatball t-bone bresaola tail filet mignon kevin turkey ribeye shank flank doner cow kielbasa shankle.
+        Muutoksien tallentaminen palvelimelle tapahtuu lähettämällä GET-pyynnön polkuun /api/tallenna. Tähän pyyntöön tulee lisätä tehdyt tehtävät (done) ja tekemättömät (todos) GET-parametreina. Eri tehtävät erotellaan alaviivoin. Vastaus tulee JSON-muodossa. Palvelin tunnistaa käyttäjän myöhemmin sessioevästeen avulla. Alla on koodiesimerkkejä.<br>
+        <br>
+        <b>JavaScript (jQuery):</b>
+        <pre><code>
+          $.get("/api/tallenna", {
+            done: "Pese pyykit_Viikkaa vaatteet", todos:"Imuroi autotalli_Maalaa olohuone"
+          });
+        </code></pre>
+        <b>JavaScript (Node.JS):</b>
+        <pre><code>
+          const http = require('http');
+
+          const options = {
+            host: 'nakkilista.kaikkitietokoneista.net',
+            path: '/api/tallenna?done=Pese pyykit_Viikkaa vaatteet&todos=Imuroi autotalli_Maalaa olohuone'
+          };
+
+          const req = http.get(options, function(res) {
+            var palaset = [];
+            res.on('data', function(chunk) {
+              palaset.push(chunk);
+            }).on('end', function() {
+              var vastaus = Buffer.concat(palaset);
+              console.log(vastaus);
+            })
+          });
+
+          req.on('error', function(e) {
+            console.log('VIRHE: ' + e.message);
+          });
+        </code></pre>
       </span>
     </div>
   </div>

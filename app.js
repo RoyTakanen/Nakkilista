@@ -143,13 +143,8 @@ app.get('/api/tehtavat', function(req, res) {
 
 app.get('/api/tallenna', function(req, res) {
   let regx = "/[^A-Öa-ö0-9-_ ]/g";
-  try {
-    let done = req.query.done.replace(eval(regx), ''); //suojaa sql-injektiolta
-    let todos = req.query.todos.replace(eval(regx), ''); //suojaa sql-injektiolta
-  } catch (e) {
-    res.setHeader('Content-Type', 'application/json');
-    res.render('api/virhe.ejs');
-  }
+  let done = req.query.done.replace(eval(regx), ''); //suojaa sql-injektiolta
+  let todos = req.query.todos.replace(eval(regx), ''); //suojaa sql-injektiolta
 
   if (req.session.authenticated) {
     console.log(`Palvelimelle tallennetaan tehtäviä. Tallentajana ${req.session.kayttajanimi}`);
