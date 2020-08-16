@@ -1,0 +1,7 @@
+{
+  "mode": "production",
+  "secret": "keyboard cat",
+  "port": 80,
+  "trust_proxy": 1,
+  "cookie_secure": true
+}

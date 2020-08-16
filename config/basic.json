@@ -1,7 +1,0 @@
-{
-  "mode": "development"
-  if mode dev
-    => db in memory
-  else
-    => choose database file
-}

@@ -4,30 +4,41 @@ const path = require('path');
 const crypto = require('crypto')
 const session = require('express-session')
 const sqlite3 = require('sqlite3').verbose();
+const helmet = require("helmet");
+const fs = require('fs');
 
 const app = express()
-const port = 8080
 
 app.set('view engine', 'ejs')
 
 app.use(express.static('static'))
 app.use(express.static('node_modules/vue'))
 
+let dblocation = ':memory:'
+
+const config = JSON.parse(fs.readFileSync('./data/config.json',
+            {encoding:'utf8', flag:'r'}));
+
+const port = config.port
+
 var sess = {
-  secret: 'keyboard cat', //vaihda konffista
-  cookie: { maxAge: 3600000 } /* 120 sekuntia */
+  secret: config.secret, //vaihda konffista
+  cookie: { } 
 }
 
-if (app.get('env') === 'production') { //vaihda konffauksesta
-  app.set('trust proxy', 1) // trust first proxy
-  sess.cookie.secure = true // serve secure cookies
+if (config.mode === 'production') { //vaihda konffauksesta
+  app.set('trust proxy', config.trust_proxy) // trust first proxy
+  sess.cookie.secure = config.cookie_secure // serve secure cookies
+  app.use(helmet());
+  dblocation = './data/database.db'
 }
 
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(session(sess))
 
-let db = new sqlite3.Database(':memory:', (err) => {
+
+let db = new sqlite3.Database(dblocation, (err) => {
   if (err) throw err;
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +50,11 @@ let db = new sqlite3.Database(':memory:', (err) => {
     todos TEXT,
     done TEXT
   );`);
-  console.log('Yhdistetty välimuistissa toimivaan tietokantaan. VAIN TESTAUSKÄYTTÖÖN');
+  if (config.mode === 'development') {
+    console.log('Yhdistetty välimuistissa toimivaan tietokantaan. VAIN TESTAUSKÄYTTÖÖN');
+  } else {
+    console.log('Yhdistetty tietokantatiedostoon.');
+  }
 });
 
 app.get('/', function(req, res) {
@@ -64,6 +79,11 @@ app.get('/kirjaudu', function (req, res) {
   })
 });
 
+app.get('/tunnistaudu', function (req, res) {
+  res.redirect('/kirjaudu')
+});
+
+
 app.post('/tunnistaudu', function (req, res) {
   if (req.body.kayttajanimi && req.body.salasana) {
     let kayttajanimi = req.body.kayttajanimi;
@@ -75,7 +95,7 @@ app.post('/tunnistaudu', function (req, res) {
       if (rows.length > 0) {
         req.session.authenticated = true;
         req.session.kayttajanimi = kayttajanimi;
-        console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); //TODO: Kerro milloin sessiot vanhenevat
+        console.log(`Käyttäjä ${rows[0].username} kirjautui sisään äsken.`); // TODO: Kerro milloin sessiot vanhenevat
         res.redirect('/')
       } else {
         res.render('kirjaudu', {
