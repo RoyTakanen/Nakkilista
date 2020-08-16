@@ -15,9 +15,18 @@ npm install
 
 Kaikki konfigurointi löytyy hakemistosta data. Tässä hakemistossa on myös tietokanta (database.db), jonka kopioimalla voi varmuuskopioida käyttäjät ja tehtävät.
 
+Tiedosto data/config.json tulisi näyttää jotakuinkin tältä:
 ```json
-
+{
+  "mode": "production",
+  "secret": "keyboard cat",
+  "port": 80,
+  "trust_proxy": 1,
+  "cookie_secure": true
+}
 ```
+
+Tästä secret tulisi vaihtaa johonkin erittäin vaikeaan ja epäarvattavaan, mikäli ohjelma ei ole vain kehityskäytössä. Mikäli moden vaihtaa development:n tietokanta on vain muistissa ja helmet-paketti poistetaan käytöstä. Tällöin osa asetuksista muuttuu hyödyttömiksi. 
 
 ### Käynnistäminen
 
