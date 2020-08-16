@@ -32,7 +32,7 @@
           </ol>
           <hr>
           <ol>
-            <li v-for="todo in done">
+            <li v-for="(todo, key) in done">
               <button class="btn-secondary btn-small" v-on:click="palauta">Palauta</button><button class="btn-danger btn-small" v-on:click="poista(key, 'done')">Poista</button> <s>{{ todo }}</s>
             </li>
           </ol>
@@ -40,11 +40,8 @@
         </div>
         <div class="sm-3 col border-dashed">
           <strong>Tilastot:</strong>
-          <p v-if="muutoksia" class="text-danger">Tallentamattomia muutoksia!!</p>
-          <p v-else class="text-success">Muutokset on tallennettu.</p>
           <p>Suoritetut: {{ suoritetut }}</p>
           <p>Suorittamattomat: {{ suorittamattomat }}</p>
-          <button class="btn-secondary btn-small" v-on:click="tallenna">Tallenna</button>
           <br>
           <hr>
           <br>
@@ -76,12 +73,18 @@
           suorita: function (index) {
             var poistettu = this.todos.splice(index, 1);
             this.done.push(poistettu[0])
-            this.muutoksia = true
+            $.get("/api/tallenna", {
+              done: this.done.join('_'),
+              todos: this.todos.join('_')
+            });
           },
           palauta: function (index) {
             var poistettu = this.done.splice(index, 1);
             this.todos.push(poistettu[0])
-            this.muutoksia = true
+            $.get("/api/tallenna", {
+              done: this.done.join('_'),
+              todos: this.todos.join('_')
+            });
           },
           poista: function (index, lista) {
             if (lista === "todos") {
@@ -89,17 +92,16 @@
             } else {
               this.done.splice(index, 1);
             }
-            this.muutoksia = true
+            $.get("/api/tallenna", {
+              done: this.done.join('_'),
+              todos: this.todos.join('_')
+            });
           },
           uusitehtava: function (tehtava) {
             if (tehtava) {
               this.todos.push(tehtava)
             }
             this.jobi = ''
-            this.muutoksia = true
-          },
-          tallenna: function () {
-            this.muutoksia = false
             $.get("/api/tallenna", {
               done: this.done.join('_'),
               todos: this.todos.join('_')
