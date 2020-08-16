@@ -5,12 +5,25 @@ Pieni todo-ohjelmisto, joka on tehty käyttäen vue.js:ää ja node.js:ää. Yks
 
 ### Asentaminen
 
-```console
-roy@kaikkitietokoneista[Nakkilista]$ git clone https://github.com/kaikkitietokoneista/Nakkilista.git
-roy@kaikkitietokoneista[Nakkilista]$ npm install
+```bash
+git clone https://github.com/kaikkitietokoneista/Nakkilista.git
+cd Nakkilista
+npm install
 ```
 
 ### Konfigurointi
+
+Kaikki konfigurointi löytyy hakemistosta data. Tässä hakemistossa on myös tietokanta (database.db), jonka kopioimalla voi varmuuskopioida käyttäjät ja tehtävät.
+
+```json
+
+```
+
+### Käynnistäminen
+
+```bash
+npm start
+```
 
 ## Tulossa
 
