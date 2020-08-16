@@ -26,7 +26,7 @@ Tiedosto data/config.json tulisi näyttää jotakuinkin tältä:
 }
 ```
 
-Tästä secret tulisi vaihtaa johonkin erittäin vaikeaan ja epäarvattavaan, mikäli ohjelma ei ole vain kehityskäytössä. Mikäli moden vaihtaa development:n tietokanta on vain muistissa ja helmet-paketti poistetaan käytöstä. Tällöin osa asetuksista muuttuu hyödyttömiksi. 
+Tästä secret tulisi vaihtaa johonkin erittäin vaikeaan ja epäarvattavaan, mikäli ohjelma ei ole vain kehityskäytössä. Mikäli moden vaihtaa development:n tietokanta on vain muistissa ja helmet-paketti poistetaan käytöstä. Tällöin osa asetuksista muuttuu hyödyttömiksi.
 
 ### Käynnistäminen
 
@@ -40,4 +40,10 @@ npm start
 2. Projektit
   I. Julkiset
   II. Sisäiset
-3. Tuki LDAP:lle.
+3. Ulkoasun päivitys
+  I.   API-napin siirto
+  II.  Erilliset asetukset
+  III. Erilliset tilastot
+  IV.  Monta paikkaa eri tehtäville (keskeneräiset, valmiit, tekemättömät)
+4. Asetukset
+5. Automaattinen tallentaminen
