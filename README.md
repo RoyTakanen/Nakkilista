@@ -5,7 +5,7 @@ Pieni todo-ohjelmisto, joka on tehty käyttäen vue.js:ää ja node.js:ää. Yks
 
 ### Asentaminen
 
-```shell
+```console
 roy@kaikkitietokoneista[Nakkilista]$ git clone https://github.com/kaikkitietokoneista/Nakkilista.git
 roy@kaikkitietokoneista[Nakkilista]$ npm install
 ```
