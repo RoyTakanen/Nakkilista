@@ -61,7 +61,8 @@
         data: {
           todos: [<%- todos.split("_").join('","') %>],
           done: [<%- done.split("_").join('","') %>],
-          muutoksia: false
+          muutoksia: false,
+          jobi: ''
         },
         computed: {
           suoritetut: function () {
