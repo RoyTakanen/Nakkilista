@@ -1,6 +1,10 @@
 # Nakkilista
 Pieni todo-ohjelmisto, joka on tehty käyttäen vue.js:ää ja node.js:ää. Yksi niistä harvoista todo-palveluista, jotka tarjoavat API:n.
 
+## Demo
+
+[https://nakkilista.kaikkitietokoneista.net] (https://nakkilista.kaikkitietokoneista.net)
+
 ## Asentaminen ja konfigurointi
 
 ### Asentaminen
@@ -47,3 +51,4 @@ npm start
   IV.  Monta paikkaa eri tehtäville (keskeneräiset, valmiit, tekemättömät)
 4. Asetukset
 5. Automaattinen tallentaminen
+6. Enkryptaus
