@@ -3,7 +3,7 @@ Pieni todo-ohjelmisto, joka on tehty käyttäen vue.js:ää ja node.js:ää. Yks
 
 ## Demo
 
-[https://nakkilista.kaikkitietokoneista.net] (https://nakkilista.kaikkitietokoneista.net)
+[https://nakkilista.kaikkitietokoneista.net](https://nakkilista.kaikkitietokoneista.net)
 
 ## Asentaminen ja konfigurointi
 
